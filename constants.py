@@ -1,4 +1,5 @@
-feature_names = ['name','latin_name',
+attribute_names = ['name',
+                 'latin_name',
                  'is_tree',
                  'is_grass',
                  'is_creeper',
