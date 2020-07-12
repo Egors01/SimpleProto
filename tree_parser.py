@@ -1,37 +1,45 @@
 import re
 import numpy as np
+import constants
 class DecisionTreeParser:
 
     def __init__(self,string_tree,features_names):
         self.tree = string_tree
-        self.features_names_from_index = {str(i):name for i, name in enumerate(features_names)}
-        self.class_to_target = {};
+        self.features_names_from_index = {int(i):name for i, name in enumerate(features_names)}
+        self.class_to_target = {}
+
     def eval_comp(self,user_answer, sign, numb):
         if sign == '<=':
-            return user_answer <= numb;
+            return user_answer <= numb
         elif sign == '<':
-            return user_answer < numb;
+            return user_answer < numb
         elif sign == '=':
             return user_answer == numb
         elif sign == '>':
-            return user_answer > numb;
+            return user_answer > numb
         elif sign == '>=':
-            return user_answer >= numb;
+            return user_answer >= numb
 
-    def parse_tree(self):
+    def get_first_question(self):
+
+        listed = self.tree.split('\n')
+        question_index = int(re.findall(r'feature_(\d)', listed[0])[0])
+        question = self.features_names_from_index[question_index]
+
+        return Tree_node(is_leaf=False,current_question=question)
+
+    def update_classification(self, answer_sequence):
         current_level = 0
         level_spacing = '|   '
         listed = self.tree.split('\n')
-        while True:
 
+        for user_answer in answer_sequence:
             feature_decision = current_level*level_spacing +'|--- feature_'+re.findall(r'feature_(\d)',listed[0])[0]
-            feature_index = re.findall(r'feature_(\d)',listed[0])[0]
-            print('Question' + self.features_names_from_index[feature_index])
+            question_index = int(re.findall(r'feature_(\d)',listed[0])[0])
+            current_question = self.features_names_from_index[question_index]
+
             feature_rules_unparsed = [[i,x] for i,x in enumerate(listed) if feature_decision in x]
 
-            # get user answer
-            user_answer = 1
-            #parse if leave
             [rule_line, rule] = feature_rules_unparsed[0]
             [alternative_rule_line, alternative_rule] = feature_rules_unparsed[1]
 
@@ -42,15 +50,31 @@ class DecisionTreeParser:
                 listed = listed[rule_line+1:alternative_rule_line]
                 next_line = rule_line+1
             else:
-                listed = listed[alternative_rule_line:]
+                listed = listed[alternative_rule_line+1:]
                 next_line = 1
             class_lookup = (current_level+1)*level_spacing +'|--- class: '
+
+            # parse if leaf
             if class_lookup in listed[next_line]:
                 class_number = int(re.findall('class: (\d+)',listed[next_line])[0])
-                break
+                target_name = constants.class_to_target[class_number]
+                return Tree_node(is_leaf=True,target_name=target_name,current_question=current_question,next_question='endpoint')
+
             else:
                 current_level+=1
-        print(class_number)
+                next_question_index = int(re.findall(r'feature_(\d)',listed[next_line])[0])
+                next_question = self.features_names_from_index[next_question_index]
+
+        return Tree_node(is_leaf=False,next_question=next_question,current_question=current_question)
+
+class Tree_node:
+    def __init__(self,is_leaf=False,target_name='unknown target',current_question ='unknown cq',next_question='unknown nq'):
+        self.is_leaf = is_leaf
+        self.target_name = target_name
+
+        self.next_question = next_question
+        self.current_question = current_question
+
         # for [i,rule,next_i,next_rule_line] in feature_rules_unparsed:
         #     #evaluate_rule
         #     condition=True

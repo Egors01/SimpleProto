@@ -27,12 +27,14 @@ import matplotlib.pyplot as plt
 
 fn=['classical leave','single leave','complex shape','roundy shape','sticky','has nuts','water','type']
 cn=['oak','maple','birch','jug','ryabina']
-fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (25,25), dpi=300)
+#fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (25,25), dpi=300)
 tree.plot_tree(clf,
                feature_names = fn,
                class_names=cn,
                filled = True)
 plt.show()
+from random import *
+
 
 string = tree.export_text(clf)
 from tree_parser import DecisionTreeParser
@@ -41,22 +43,20 @@ decision_guide = DecisionTreeParser(string,['classical leave',
                                                     'complex shape',
                                                     'roundy shape',
                                                     'sticky', 'has nuts', 'water'])
-decision_guide.parse_tree()
+result_clf = decision_guide.get_first_question()
+seq = []
+i=0
+seq=[0]
+print('info: is leaf', result_clf.is_leaf, 'QQ: ', result_clf.current_question, 'QN: ', result_clf.next_question)
+while not result_clf.is_leaf:
+    print('iter '+str(i))
+    seq.append(1)
+    print(seq)
 
-
-# Not doing this step in the tutorial
-clf.predict(X_train)
-
-
-
-
-n_nodes = clf.tree_.node_count
-children_left = clf.tree_.children_left
-children_right = clf.tree_.children_right
-feature = clf.tree_.feature
-threshold = clf.tree_.threshold
-leave_id = clf.apply(X_test)
-paths ={}
+    result_clf = decision_guide.update_classification(seq)
+    print('info: is leaf', result_clf.is_leaf,'QQ: ', result_clf.current_question, 'QN: ',result_clf.next_question)
+    i += 1
+print('Result ', result_clf.is_leaf, result_clf.target_name, 'in ', i)
 
 
 
@@ -66,6 +66,3 @@ tree.plot_tree(clf,
                filled = True)
 tree.export_text(clf)
 plt.show()
-clf.decision_path(X_test)
-tree.plot_tree(clf,rounded=True,class_names=True,proportion=True,feature_names=load_irisdata.feature_names);
-print()
