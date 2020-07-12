@@ -38,26 +38,22 @@ from random import *
 
 string = tree.export_text(clf)
 from tree_parser import DecisionTreeParser
-decision_guide = DecisionTreeParser(string,['classical leave',
-                                                    'single leave',
-                                                    'complex shape',
-                                                    'roundy shape',
-                                                    'sticky', 'has nuts', 'water'])
+decision_guide = DecisionTreeParser(string,fn)
 result_clf = decision_guide.get_first_question()
 seq = []
 i=0
-seq=[0]
+seq=[0,1,0]
 print('info: is leaf', result_clf.is_leaf, 'QQ: ', result_clf.current_question, 'QN: ', result_clf.next_question)
+
 while not result_clf.is_leaf:
     print('iter '+str(i))
-    seq.append(1)
-    print(seq)
-
     result_clf = decision_guide.update_classification(seq)
-    print('info: is leaf', result_clf.is_leaf,'QQ: ', result_clf.current_question, 'QN: ',result_clf.next_question)
+    print('info: is leaf', result_clf.is_leaf,'QQ: ',
+          result_clf.current_question, 'QN: ',
+          result_clf.next_question)
     i += 1
-print('Result ', result_clf.is_leaf, result_clf.target_name, 'in ', i)
 
+print('Result ', result_clf.is_leaf, result_clf.target_name, 'in ', i)
 
 
 tree.plot_tree(clf,

@@ -29,17 +29,27 @@ class DecisionTreeParser:
         return Tree_node(is_leaf=False,current_question=question)
 
     def update_classification(self, answer_sequence):
+        class_lookup = '|--- class: '
         current_level = 0
         level_spacing = '|   '
         listed = self.tree.split('\n')
+        next_line = 0
 
-        for user_answer in answer_sequence:
-            feature_decision = current_level*level_spacing +'|--- feature_'+re.findall(r'feature_(\d)',listed[0])[0]
-            question_index = int(re.findall(r'feature_(\d)',listed[0])[0])
+        next_question_index=0
+        for i,user_answer in enumerate(answer_sequence):
+
+            # if i!=0:
+            #     question_index=next_question_index
+            #     feature_decision='|--- feature_'+str(question_index)
+            # else:
+            question_index = int(re.findall(r'feature_(\d)', listed[0])[0])
+            feature_decision = '|--- feature_' + str(question_index)
+            #feature_decision = '|--- feature_'+re.findall(r'feature_(\d)',listed[0])[0]
+
+
             current_question = self.features_names_from_index[question_index]
 
             feature_rules_unparsed = [[i,x] for i,x in enumerate(listed) if feature_decision in x]
-
             [rule_line, rule] = feature_rules_unparsed[0]
             [alternative_rule_line, alternative_rule] = feature_rules_unparsed[1]
 
@@ -48,18 +58,17 @@ class DecisionTreeParser:
             condition = self.eval_comp(user_answer,operand,threshold)
             if condition:
                 listed = listed[rule_line+1:alternative_rule_line]
-                next_line = rule_line+1
+                next_line = 0
             else:
                 listed = listed[alternative_rule_line+1:]
-                next_line = 1
-            class_lookup = (current_level+1)*level_spacing +'|--- class: '
+                next_line = 0
+
 
             # parse if leaf
             if class_lookup in listed[next_line]:
                 class_number = int(re.findall('class: (\d+)',listed[next_line])[0])
                 target_name = constants.class_to_target[class_number]
                 return Tree_node(is_leaf=True,target_name=target_name,current_question=current_question,next_question='endpoint')
-
             else:
                 current_level+=1
                 next_question_index = int(re.findall(r'feature_(\d)',listed[next_line])[0])
