@@ -1,3 +1,4 @@
+
 attribute_names = ['name',
                  'latin_name',
                  'is_tree',
@@ -40,5 +41,8 @@ attribute_names = ['name',
                  'is_eu_invasive',
                  'image_link',
                  'description']
-questions_to_index = {i:x for i,x in enumerate(feature_names[2:-4])}
+questions_to_index = {i:x for i,x in enumerate(attribute_names[2:-4])}
+feature_names = attribute_names[2:-4]
 class_to_target = {i+1:name for i,name in enumerate(['oak','maple','birch','jug','ryabina'])}
+
+

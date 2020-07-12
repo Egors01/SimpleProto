@@ -31,6 +31,7 @@ class DecisionTreeParser:
     def update_classification(self, answer_sequence):
         class_lookup = '|--- class: '
         current_level = 0
+        next_question=''
         level_spacing = '|   '
         listed = self.tree.split('\n')
         next_line = 0
