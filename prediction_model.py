@@ -21,25 +21,24 @@ string = export_text(clf)
 questions = [questions_dict[name] for name in feature_names]
 
 # Plot TREE
-fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (50,50), dpi=200)
-plot_tree(clf,
-               feature_names = questions,
-               class_names=df['name'],filled=True,proportion=False,
-                fontsize=20,node_ids = True,rounded=True)
-plt.savefig('decision_tree.png')
-plt.show()
+# fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (50,50), dpi=200)
+# plot_tree(clf,
+#                feature_names = questions,
+#                class_names=df['name'],filled=True,proportion=False,
+#                 fontsize=20,node_ids = True,rounded=True)
+# plt.savefig('decision_tree.png')
+# plt.show()
 
 # Follow the path on the TREE
 
 
 decision_guide = DecisionTreeParser(string,feature_names)
 result_clf = decision_guide.get_first_question()
-seq = []
-i=0
+sequence = [1,1]
 
-print('info: is leaf', result_clf.is_leaf, 'QQ: ', result_clf.current_question, 'QN: ', result_clf.next_question)
+
 while not result_clf.is_leaf:
-    result_clf = decision_guide.update_classification(seq)
+    result_clf = decision_guide.update_classification(sequence)
 
-print('Result ', result_clf.is_leaf, result_clf.target_name, 'in ', i)
+print('Result: I gues it is : {}'.format(result_clf.target_name))
 

@@ -32,6 +32,7 @@ class DecisionTreeParser:
         class_lookup = '|--- class: '
         current_level = 0
         next_question=''
+        current_question =''
         level_spacing = '|   '
         listed = self.tree.split('\n')
         next_line = 0
@@ -85,13 +86,5 @@ class Tree_node:
         self.next_question = next_question
         self.current_question = current_question
 
-        # for [i,rule,next_i,next_rule_line] in feature_rules_unparsed:
-        #     #evaluate_rule
-        #     condition=True
-        #     # if no - go to next level
-        #     if 'class' not in next_rule_line and condition:
-        #         current_level+=1
-        #
-        #         pass
 
 
